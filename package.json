@@ -1,0 +1,32 @@
+{
+  "name": "better-js-tools",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "node --loader ts-node/esm ./src/index.ts",
+    "build" : "tsc",
+    "prostart" : "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Unknown123465/better-js-tools.git"
+  },
+  "keywords": [
+    "js",
+    "Intl",
+    "promise",
+    "better"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Unknown123465/better-js-tools/issues"
+  },
+  "homepage": "https://github.com/Unknown123465/better-js-tools#readme",
+  "type": "module",
+  "devDependencies": {
+    "ts-node": "^10.9.1"
+  }
+}
