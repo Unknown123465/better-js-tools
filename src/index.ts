@@ -31,17 +31,15 @@ import {Schedule} from "./schedule.js";
 
     const dateFormat = new BetterIntl.DateTimeFormat("fr-CA", "ko");
     //console.log(BetterIntl.DateTimeFormat.simpleDateFormat("YYYY.MM.DD"))
-    console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : false}))
-})();
+    console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : false}, new Date(), "*"))
+})/*()*/;
 
 (async() => {
 
-    console.log(NumberTools.getNumberRange(3, 7));
+    console.log(NumberTools.getNumberArray(3, 7));
     console.log(NumberTools.getRandomNumber(0, 10, 5, "float"));
+    console.log(new BetterIntl.ListFormat("ko", {}).format([1,2,3, null, undefined, ""]))
     
 })()
 
-export class JSTools {
-    readonly Schedule = Schedule;
-    readonly BetterIntl = BetterIntl;
-}
+export {Schedule, BetterIntl, NumberTools};

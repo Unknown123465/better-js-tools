@@ -17,14 +17,14 @@ class NumberTools {
         }
         
         const array:number[] = [];
-        this.getNumberRange(attempt).forEach(() => {
+        this.getNumberArray(attempt).forEach(() => {
             array.push(random());
         });
 
         return array;
     }
 
-    static getNumberRange(first:number, second?:number|undefined):number[] {
+    static getNumberArray(first:number, second?:number|undefined):number[] {
 
         if (!Number.isInteger(first) || (typeof second === "number" && !Number.isInteger(second))) {
             throw new RangeError("The first and second arguments must be integer (but the second argument can be undefined).");

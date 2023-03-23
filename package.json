@@ -17,7 +17,8 @@
     "js",
     "Intl",
     "promise",
-    "better"
+    "better",
+    "function"
   ],
   "author": "",
   "license": "MIT",
