@@ -27,6 +27,9 @@ class DateTimeFormat {
             .replace(/S{2}/g, second)
             .replace(/S{1}/g, second.substring(1));
     }
+    langChnage(langType, value) {
+        this[langType === "date" ? "outputDateLang" : "outputTimeLang"] = value;
+    }
     mixDateTimeFormat(options, format = Date.now(), divide = "space") {
         const dateOption = {
             weekday: options.weekday,
@@ -39,21 +42,45 @@ class DateTimeFormat {
             formatMatcher: options.formatMatcher,
         };
         const timeOption = {
-            hour: options.hour,
-            minute: options.minute,
-            second: options.second,
+            hour: options.hour ?? "2-digit",
+            minute: options.minute ?? "2-digit",
+            second: options.second ?? "2-digit",
             timeZone: options.timeZone,
             timeZoneName: options.timeZoneName,
-            hour12: options.hour12,
+            hour12: options.hour12 ?? true,
             hourCycle: options.hourCycle,
             formatMatcher: options.formatMatcher,
         };
         const date = Intl.DateTimeFormat(this.outputDateLang, dateOption).format(format);
         const time = Intl.DateTimeFormat(this.outputTimeLang, timeOption).format(format);
-        return date + (divide !== "none" ? (divide === "space" ? " " : "\n") : "") + time;
+        const customDivide = {
+            none: "",
+            space: " ",
+            break: "\n",
+        };
+        return date + (customDivide[divide] ?? divide) + time;
+    }
+}
+class ListFormat extends Intl.ListFormat {
+    constructor(lang, option = { falsy: false, nullish: false, localeMatcher: "best fit", style: "long" }) {
+        super();
+        this.lang = lang;
+        this.option = option;
+    }
+    format(value) {
+        let array = value;
+        if (!this.option.falsy) {
+            array = array.filter((f) => f || f === null || f === undefined);
+        }
+        if (!this.option.nullish) {
+            array = array.filter((f) => f !== null && f !== undefined);
+        }
+        array = array.map((f) => String(f));
+        return new Intl.ListFormat(this.lang, this.option).format(array);
     }
 }
 class BetterIntl {
 }
 BetterIntl.DateTimeFormat = DateTimeFormat;
+BetterIntl.ListFormat = ListFormat;
 export { BetterIntl };

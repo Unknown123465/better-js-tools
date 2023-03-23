@@ -1,21 +1,12 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 class Schedule {
     constructor() {
         this.scheduleArray = [];
     }
     addSchedule(name, fun, time, ...params) {
-        if (this.scheduleArray.some((f) => f.name === name)) {
+        if (this.scheduleArray.some((f) => typeof name === "string" && f.name === name)) {
             throw new TypeError("That schedule name already exists: " + name);
         }
-        this.scheduleArray.push({ name: name !== null && name !== void 0 ? name : undefined, fun, time, params: [...params] });
+        this.scheduleArray.push({ name: name ?? undefined, fun, time, params: [...params] });
     }
     getSchedule(target) {
         if (typeof target === "number") {
@@ -36,6 +27,15 @@ class Schedule {
         }
         else if (errorIndex > -1) {
             throw new TypeError(`The type of argument ${errorIndex + 1} is invalid. Valid types are ${typeArray.toString().replace(/,/g, ", ")}.`);
+        }
+        else if (range.some((f) => typeof f === "number" && (!Number.isInteger(f) || !isFinite(f)))) {
+            throw new RangeError("The argument must be integer and must be finite.");
+        }
+        else if (range.some((f) => typeof f === "number" && f < 0)) {
+            throw new RangeError("The arguments must be zero or greater.");
+        }
+        else if (typeof range[0] === "number" && typeof range[1] === "number" && range[0] > range[1]) {
+            throw new RangeError("The first argument must not be larger than the second argument.");
         }
         return this.scheduleArray.filter((f, index, cb) => range.some((f2) => f.name === f2) || (typeof range[0] === "number" && range[0] <= index && (typeof range[1] === "number" ? range[1] : cb.length) > index));
     }
@@ -59,7 +59,7 @@ class Schedule {
         else {
             changeTarget = fun;
         }
-        this.scheduleArray = this.scheduleArray.map((f, index) => index === target || f.name === target ? changeTarget !== null && changeTarget !== void 0 ? changeTarget : f : f);
+        this.scheduleArray = this.scheduleArray.map((f, index) => index === target || f.name === target ? changeTarget ?? f : f);
     }
     deleteSchedule(target) {
         this.scheduleArray = this.scheduleArray.filter((f, index) => !(index === target || f.name === target));
@@ -67,19 +67,16 @@ class Schedule {
     clearSchedule() {
         this.scheduleArray = [];
     }
-    runScheduleOnePromise(target, time = 0, ...params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const schedule = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name);
-            if (!schedule) {
-                throw new TypeError("The schedule does not exist.");
-            }
-            return yield new Promise((resolve) => {
-                var _a, _b;
-                setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                    const result = yield schedule.fun(...(params.length ? params : schedule.params));
-                    resolve(result);
-                }), (_b = (_a = schedule.time) !== null && _a !== void 0 ? _a : time) !== null && _b !== void 0 ? _b : 0);
-            });
+    async runScheduleOnePromise(target, time = 0, ...params) {
+        const schedule = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name);
+        if (!schedule) {
+            throw new TypeError("The schedule does not exist.");
+        }
+        return await new Promise((resolve) => {
+            setTimeout(async () => {
+                const result = await schedule.fun(...(params.length ? params : schedule.params));
+                resolve(result);
+            }, schedule.time ?? time ?? 0);
         });
     }
     runScheduleOne(target, ...params) {
@@ -89,62 +86,39 @@ class Schedule {
         }
         return schedule.fun(...(params.length ? params : schedule.params));
     }
-    runScheduleAllPromise(time = [], ...params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let index = 0;
-            const array = [];
-            for (const i of this.scheduleArray) {
-                const result = yield new Promise((resolve) => {
-                    var _a, _b;
-                    setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                        var _c;
-                        const result = yield i.fun(...(((_c = params[index]) === null || _c === void 0 ? void 0 : _c.length) ? params[index] : i.params));
-                        resolve(result);
-                    }), (_b = (_a = time[index]) !== null && _a !== void 0 ? _a : i.time) !== null && _b !== void 0 ? _b : 0);
-                });
-                array.push(result);
-                index++;
-            }
-            return array;
-        });
+    async runScheduleAllPromise(time = [], ...params) {
+        let index = 0;
+        const array = [];
+        for (const i of this.scheduleArray) {
+            const result = await new Promise((resolve) => {
+                setTimeout(async () => {
+                    const result = await i.fun(...(params[index]?.length ? params[index] : i.params));
+                    resolve(result);
+                }, time[index] ?? i.time ?? 0);
+            });
+            array.push(result);
+            index++;
+        }
+        return array;
     }
     runScheduleAll(...params) {
         const array = [];
         this.scheduleArray.forEach((f, index) => {
-            var _a;
-            const result = f.fun(...(((_a = params[index]) === null || _a === void 0 ? void 0 : _a.length) ? params[index] : f.params));
+            const result = f.fun(...(params[index]?.length ? params[index] : f.params));
             array.push(result);
         });
         return array;
     }
-    runScheduleRangePromise(start = 0, end = this.scheduleArray.length - 1, time = [], ...params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let index = 0;
-            const array = [];
-            for (const i of this.scheduleArray) {
-                if (start > index) {
-                    index++;
-                    continue;
-                }
-                else if (end <= index) {
-                    break;
-                }
-                const result = yield new Promise((resolve) => {
-                    var _a, _b;
-                    setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                        var _c;
-                        const result = yield i.fun(...(((_c = params[index]) === null || _c === void 0 ? void 0 : _c.length) ? params[index] : i.params));
-                        resolve(result);
-                    }), (_b = (_a = time[index]) !== null && _a !== void 0 ? _a : i.time) !== null && _b !== void 0 ? _b : 0);
-                });
-                array.push(result);
-                index++;
-            }
-            return array;
-        });
-    }
-    runScheduleRange(start = 0, end = this.scheduleArray.length - 1, ...params) {
-        var _a;
+    async runScheduleRangePromise(start = 0, end = this.scheduleArray.length - 1, time = [], ...params) {
+        if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < 0) {
+            throw new RangeError("The start and end arguments must be greater than or equal to 0 and must be integer(but the end argument can be undefined).");
+        }
+        else if (!isFinite(start) || !isFinite(end)) {
+            throw new RangeError("The start and end arguments must be a finite(but the end argument can be undefined).");
+        }
+        else if (start > end) {
+            throw new RangeError("The start argument must not be larger than the end argument.");
+        }
         let index = 0;
         const array = [];
         for (const i of this.scheduleArray) {
@@ -155,17 +129,49 @@ class Schedule {
             else if (end <= index) {
                 break;
             }
-            const result = i.fun(...(((_a = params[index]) === null || _a === void 0 ? void 0 : _a.length) ? params[index] : i.params));
+            const result = await new Promise((resolve) => {
+                setTimeout(async () => {
+                    const result = await i.fun(...(params[index]?.length ? params[index] : i.params));
+                    resolve(result);
+                }, time[index] ?? i.time ?? 0);
+            });
             array.push(result);
             index++;
         }
         return array;
     }
-    static sleep(time) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield new Promise((resolve) => {
-                setTimeout(resolve, time);
-            });
+    runScheduleRange(start = 0, end = this.scheduleArray.length - 1, ...params) {
+        if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < 0) {
+            throw new RangeError("The start and end arguments must be greater than or equal to 0 and must be integer(but the end argument can be undefined).");
+        }
+        else if (!isFinite(start) || !isFinite(end)) {
+            throw new RangeError("The start and end arguments must be a finite(but the end argument can be undefined).");
+        }
+        else if (start > end) {
+            throw new RangeError("The start argument must not be larger than the end argument.");
+        }
+        let index = 0;
+        const array = [];
+        for (const i of this.scheduleArray) {
+            if (start > index) {
+                index++;
+                continue;
+            }
+            else if (end <= index) {
+                break;
+            }
+            const result = i.fun(...(params[index]?.length ? params[index] : i.params));
+            array.push(result);
+            index++;
+        }
+        return array;
+    }
+    static async sleep(time) {
+        if (time < 0 || !isFinite(time)) {
+            throw new RangeError("The argument must be positive and finite");
+        }
+        await new Promise((resolve) => {
+            setTimeout(resolve, time);
         });
     }
 }

@@ -36,10 +36,14 @@ import {Schedule} from "./schedule.js";
 
 (async() => {
 
-    console.log(NumberTools.getNumberArray(3, 7));
-    console.log(NumberTools.getRandomNumber(0, 10, 5, "float"));
-    console.log(new BetterIntl.ListFormat("ko", {}).format([1,2,3, null, undefined, ""]))
+    console.log(NumberTools.getNumberArray(0, 10));
+    console.log(NumberTools.getRandomNumber(0, 10, 20, "int"));
+    //console.log(new BetterIntl.ListFormat("ko", {}).format([1,2,3, null, undefined, ""]))
     
 })()
 
-export {Schedule, BetterIntl, NumberTools};
+export class JSTools {
+    public static readonly Schedule = Schedule;
+    public static readonly BetterIntl = BetterIntl;
+    public static readonly NumberTools = NumberTools;
+};

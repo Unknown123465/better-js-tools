@@ -32,8 +32,8 @@ type ListOption = {
 class DateTimeFormat {
 
     constructor(
-        public readonly outputDateLang?:string|undefined,
-        public readonly outputTimeLang?:string|undefined,
+        public outputDateLang?:string|undefined,
+        public outputTimeLang?:string|undefined,
     ) {}
 
     static simpleDateFormat(format:string, date:Date|number = Date.now(), timeZone?:string|undefined):string {
@@ -66,6 +66,10 @@ class DateTimeFormat {
         .replace(/M{1}/g, minute.substring(1))
         .replace(/S{2}/g, second)
         .replace(/S{1}/g, second.substring(1));
+    }
+
+    langChnage(langType:"date"|"time", value:string) {
+        this[langType === "date" ? "outputDateLang" : "outputTimeLang"] = value;
     }
 
     mixDateTimeFormat(options:FormatOptions, format:Date|number = Date.now(), divide:"space"|"break"|"none"|string = "space"):string {
@@ -131,8 +135,7 @@ class ListFormat extends Intl.ListFormat {
 }
 
 
-class BetterIntl {
+export class BetterIntl {
     public static readonly DateTimeFormat = DateTimeFormat;
     public static readonly ListFormat = ListFormat;
 }
-export {BetterIntl};
