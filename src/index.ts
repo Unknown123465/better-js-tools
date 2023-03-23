@@ -1,6 +1,6 @@
 import { BetterIntl } from "./betterIntl.js";
+import { NumberTools } from "./number.js";
 import {Schedule} from "./schedule.js";
-
 
 (async() => {
     const test = new Schedule();
@@ -32,5 +32,16 @@ import {Schedule} from "./schedule.js";
     const dateFormat = new BetterIntl.DateTimeFormat("fr-CA", "ko");
     //console.log(BetterIntl.DateTimeFormat.simpleDateFormat("YYYY.MM.DD"))
     console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : true}))
-})();
+})/*()*/;
 
+(async() => {
+
+    console.log(NumberTools.getNumberRange(3, 7));
+    console.log(NumberTools.getRandomNumber(0, 10, 5, "float"));
+    
+})()
+
+export class JSTools {
+    readonly Schedule = Schedule;
+    readonly BetterIntl = BetterIntl;
+}
