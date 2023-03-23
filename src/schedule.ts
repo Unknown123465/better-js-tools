@@ -13,7 +13,7 @@ class Schedule {
 
     addSchedule(name:string|undefined, fun:Function, time:number|undefined, ...params:Array<any>) {
 
-        if (this.scheduleArray.some((f) => f.name === name)) {
+        if (this.scheduleArray.some((f) => typeof name === "string" && f.name === name)) {
             throw new TypeError("That schedule name already exists: " + name);
         }
 
@@ -39,6 +39,12 @@ class Schedule {
             throw new TypeError(`The arguments types don't match.`);
         } else if (errorIndex > -1) {
             throw new TypeError(`The type of argument ${errorIndex + 1} is invalid. Valid types are ${typeArray.toString().replace(/,/g, ", ")}.`);
+        } else if (range.some((f) => typeof f === "number" && (!Number.isInteger(f) || !isFinite(f)))) {
+            throw new RangeError("The argument must be integer and must be finite.");
+        } else if (range.some((f) => typeof f === "number" && f < 0)) {
+            throw new RangeError("The arguments must be zero or greater.");
+        } else if (typeof range[0] === "number" && typeof range[1] === "number" && range[0] > range[1]) {
+            throw new RangeError("The first argument must not be larger than the second argument.");
         }
 
         return this.scheduleArray.filter((f, index, cb) => range.some((f2) => f.name === f2) || (typeof range[0] === "number" && range[0] <= index && (typeof range[1] === "number" ? range[1] : cb.length) > index));
@@ -68,7 +74,6 @@ class Schedule {
     }
 
     deleteSchedule(target:number|string) {
-
         this.scheduleArray = this.scheduleArray.filter((f, index) => !(index === target || f.name === target));
     }
 
@@ -136,6 +141,14 @@ class Schedule {
 
     async runScheduleRangePromise(start:number = 0, end:number = this.scheduleArray.length - 1, time:number[] = [], ...params:Array<any[]>):Promise<any[]> {
 
+        if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < 0) {
+            throw new RangeError("The start and end arguments must be greater than or equal to 0 and must be integer(but the end argument can be undefined).");
+        } else if (!isFinite(start) || !isFinite(end)) {
+            throw new RangeError("The start and end arguments must be a finite(but the end argument can be undefined).");
+        } else if (start > end) {
+            throw new RangeError("The start argument must not be larger than the end argument.");
+        }
+
         let index = 0;
         const array = [];
         for (const i of this.scheduleArray) {
@@ -164,6 +177,14 @@ class Schedule {
 
     runScheduleRange(start:number = 0, end:number = this.scheduleArray.length - 1, ...params:Array<any[]>):any[] {
 
+        if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < 0) {
+            throw new RangeError("The start and end arguments must be greater than or equal to 0 and must be integer(but the end argument can be undefined).");
+        } else if (!isFinite(start) || !isFinite(end)) {
+            throw new RangeError("The start and end arguments must be a finite(but the end argument can be undefined).");
+        } else if (start > end) {
+            throw new RangeError("The start argument must not be larger than the end argument.");
+        }
+
         let index = 0;
         const array = [];
         for (const i of this.scheduleArray) {
@@ -186,6 +207,9 @@ class Schedule {
 
     static async sleep(time:number) {
 
+        if (time < 0 || !isFinite(time)) {
+            throw new RangeError("The argument must be positive and finite");
+        }
         await new Promise((resolve) => {
             setTimeout(resolve, time);
         });

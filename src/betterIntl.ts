@@ -72,16 +72,16 @@ class DateTimeFormat {
         };
 
         const timeOption = {
-            hour : options.hour,
-            minute : options.minute,
-            second : options.second,
+            hour : options.hour ?? "2-digit",
+            minute : options.minute ?? "2-digit",
+            second : options.second ?? "2-digit",
             timeZone : options.timeZone,
             timeZoneName : options.timeZoneName,
-            hour12 : options.hour12,
+            hour12 : options.hour12 ?? true,
             hourCycle : options.hourCycle,
             formatMatcher : options.formatMatcher,
         };
-
+        
         const date = Intl.DateTimeFormat(this.outputDateLang, dateOption).format(format);
         const time = Intl.DateTimeFormat(this.outputTimeLang, timeOption).format(format);
 

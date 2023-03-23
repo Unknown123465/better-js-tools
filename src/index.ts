@@ -31,8 +31,8 @@ import {Schedule} from "./schedule.js";
 
     const dateFormat = new BetterIntl.DateTimeFormat("fr-CA", "ko");
     //console.log(BetterIntl.DateTimeFormat.simpleDateFormat("YYYY.MM.DD"))
-    console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : true}))
-})/*()*/;
+    console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : false}))
+})();
 
 (async() => {
 
