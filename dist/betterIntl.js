@@ -10,9 +10,9 @@ class DateTimeFormat {
             .replace(/Y{4}/g, year)
             .replace(/Y{2}/g, year.substring(2))
             .replace(/M{2}/g, month)
-            .replace(/M{1}/g, month.substring(1))
+            .replace(/M{1}/g, Number(month) < 10 ? month.substring(1) : month)
             .replace(/D{2}/g, day)
-            .replace(/D{1}/g, day.substring(1));
+            .replace(/D{1}/g, Number(day) < 10 ? day.substring(1) : day);
     }
     static simpleTimeFormat(format, date = Date.now(), timeZone) {
         const realDate = Intl.DateTimeFormat("ko", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone }).format(date);
@@ -83,4 +83,4 @@ class BetterIntl {
 }
 BetterIntl.DateTimeFormat = DateTimeFormat;
 BetterIntl.ListFormat = ListFormat;
-export { BetterIntl };
+export default BetterIntl;

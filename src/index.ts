@@ -1,7 +1,8 @@
-import { BetterIntl } from "./betterIntl.js";
-import { NumberTools } from "./number.js";
-import {Schedule} from "./schedule.js";
+import BetterIntl from "./betterIntl.js";
+import NumberTools from "./number.js";
+import Schedule from "./schedule.js";
 
+/*
 (async() => {
     const test = new Schedule();
 
@@ -12,7 +13,7 @@ import {Schedule} from "./schedule.js";
     await test.runScheduleOnePromise(0, 1000);
     console.log(test.getSchedule("first"))
 
-    test.setSchedule(0, 100);
+    //test.setSchedule(0, 100);
     await test.runScheduleOne(0, ["test2"]);
 
 
@@ -22,18 +23,23 @@ import {Schedule} from "./schedule.js";
     }
 
     console.log("----------------------");
-    test.runScheduleRange(2, 4, ["a", "B", "c"], ["e", "f"])
+    //test.runScheduleRange(2, 4, ["a", "B", "c"], ["e", "f"])
+    console.log(test.getSchedule(0));
+    //console.log(test.getScheduleAll().map((f, index) => index + ":" + f.name))
+    test.setSchedule(3, "도배");
+    console.log(test.getScheduleAll().map((f, index) => index + ":" + f.name))
     
     //await test.runScheduleAll([["test"]], [1000, 1000, 1000, 1000, 1000]);
     
     //await test.runScheduleRangePromise(0, 2, [["test"], [1], [2], [3]], [500, 500]);
 
-    /*console.log(test.getScheduleRange("first", "index=3", "adsad"));
+    console.log(test.getScheduleRange("first", "index=3", "adsad"));
 
     const dateFormat = new BetterIntl.DateTimeFormat("fr-CA", "ko");
     //console.log(BetterIntl.DateTimeFormat.simpleDateFormat("YYYY.MM.DD"))
-    console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : false}, new Date(), "*"))*/
+    console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : false}, new Date(), "*"))
 })()
+*/
 /*
 (async() => {
 
@@ -45,9 +51,3 @@ import {Schedule} from "./schedule.js";
 */
 
 export {Schedule, BetterIntl, NumberTools};
-
-/*export class JSTools {
-    public static readonly Schedule = Schedule;
-    public static readonly BetterIntl = BetterIntl;
-    public static readonly NumberTools = NumberTools;
-};*/

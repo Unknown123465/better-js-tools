@@ -28,8 +28,8 @@ class NumberTools {
         else if (typeof second === "number" && first > second) {
             throw new RangeError("The first argument must not be greater than the second argument.");
         }
-        else if (unit <= 0) {
-            throw new RangeError("The unit argument must be at least 1.");
+        else if (unit <= 0 || !isFinite(unit) || !Number.isInteger(unit)) {
+            throw new RangeError("The unit argument must be at least 1 and an integer and finite.");
         }
         const array = [];
         for (let i = typeof second === "number" && second >= 1 ? first : 0; i < (typeof second === "number" ? second : first); i += unit) {
@@ -38,4 +38,4 @@ class NumberTools {
         return array;
     }
 }
-export { NumberTools };
+export default NumberTools;

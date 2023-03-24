@@ -3,13 +3,34 @@ class Schedule {
         this.scheduleArray = [];
     }
     addSchedule(name, fun, time, ...params) {
-        if (this.scheduleArray.some((f) => typeof name === "string" && f.name === name)) {
+        if (typeof name === "string" && this.scheduleArray.some((f) => f.name === name)) {
             throw new TypeError("This schedule name already exists: " + name);
         }
         else if (typeof time === "number" && (!isFinite(time) || time < 0)) {
             throw new RangeError("The time argument must be a finite and positive.");
         }
-        this.scheduleArray.push({ name: name || undefined, fun, time, params: params });
+        this.scheduleArray.push({ name: name || undefined, fun, time: time ?? 0, params });
+    }
+    addScheduleByFirst(name, fun, time, ...params) {
+        if (typeof name === "string" && this.scheduleArray.some((f) => f.name === name)) {
+            throw new TypeError("This schedule name already exists: " + name);
+        }
+        else if (typeof time === "number" && (!isFinite(time) || time < 0)) {
+            throw new RangeError("The time argument must be a finite and positive.");
+        }
+        this.scheduleArray.unshift({ name: name || undefined, fun, time: time ?? 0, params });
+    }
+    addScheduleByIndex(index, name, fun, time, ...params) {
+        if (index < 0 || !isFinite(index) || !Number.isInteger(index)) {
+            throw new RangeError("The index argument must be at least 0, a finite, and an integer.");
+        }
+        else if (typeof name === "string" && this.scheduleArray.some((f) => f.name === name)) {
+            throw new TypeError("This schedule name already exists: " + name);
+        }
+        else if (typeof time === "number" && (!isFinite(time) || time > 0)) {
+            throw new RangeError("The time argument must be a finite and positive.");
+        }
+        this.scheduleArray.splice(index, 0, { name: name || undefined, fun, time: time ?? 0, params });
     }
     getSchedule(target) {
         if (typeof target === "number") {
@@ -19,20 +40,20 @@ class Schedule {
             return this.scheduleArray.find((f) => f.name === target);
         }
     }
-    getScheduleRange(...range) {
+    getScheduleRangeOrNames(...range) {
         const typeArray = ["string", "number", "undefined"];
         const errorIndex = range.findIndex((f) => !typeArray.includes(typeof f));
         if (!range.length) {
-            throw new TypeError("Failed to execute 'getScheduleRange' on 'Schedule': 1 argument required, but only 0 present.");
+            throw new TypeError("Failed to execute 'getScheduleRangeOrNames' on 'Schedule': 1 argument required, but only 0 present.");
         }
         else if (range.some((f, index, cb) => cb.some((f2) => typeof f2 !== typeof f))) {
             throw new TypeError(`The arguments types don't match.`);
         }
         else if (errorIndex > -1) {
-            throw new TypeError(`The type of argument ${errorIndex + 1} is invalid. Valid types are ${typeArray.toString().replace(/,/g, ", ")}.`);
+            throw new TypeError(`The type of argument ${errorIndex + 1} is invalid. Valid types are ${typeArray.join(", ")}.`);
         }
         else if (range.some((f) => typeof f === "number" && (!Number.isInteger(f) || !isFinite(f)))) {
-            throw new RangeError("The argument must be integer and must be finite.");
+            throw new RangeError("The argument must be integer and finite.");
         }
         else if (range.some((f) => typeof f === "number" && f < 0)) {
             throw new RangeError("The arguments must be zero or greater.");
@@ -63,9 +84,16 @@ class Schedule {
             changeTarget = fun;
         }
         this.scheduleArray = this.scheduleArray.map((f, index) => index === target || f.name === target ? changeTarget ?? f : f);
+        return true;
     }
     deleteSchedule(target) {
-        this.scheduleArray = this.scheduleArray.filter((f, index) => !(index === target || f.name === target));
+        if (this.scheduleArray.some((f, index) => index === target || f.name === target)) {
+            this.scheduleArray = this.scheduleArray.filter((f, index) => !(index === target || f.name === target));
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     clearSchedule() {
         this.scheduleArray = [];
@@ -174,13 +202,13 @@ class Schedule {
         return array;
     }
     async runScheduleAsNamesPromise(name, time, ...params) {
-        if (!name.length) {
+        if (Array.isArray(name) && !name.length) {
             throw new TypeError("The array length of the name argument must be at least 1.");
         }
         let index = 0;
         const array = [];
         for (const i of this.scheduleArray) {
-            if (typeof i.name === "undefined" || (typeof i.name === "string" && !name.includes(i.name))) {
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && Array.isArray(name) && !name.includes(i.name)) || (name instanceof RegExp && i.name.search(name) === -1)) {
                 continue;
             }
             const result = await new Promise((resolve) => {
@@ -195,13 +223,13 @@ class Schedule {
         return array;
     }
     runScheduleAsNames(name, ...params) {
-        if (!name.length) {
+        if (Array.isArray(name) && !name.length) {
             throw new TypeError("The array length of the name argument must be at least 1.");
         }
         let index = 0;
         const array = [];
         for (const i of this.scheduleArray) {
-            if (typeof i.name === "undefined" || (typeof i.name === "string" && !name.includes(i.name))) {
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && Array.isArray(name) && !name.includes(i.name)) || (name instanceof RegExp && i.name.search(name) === -1)) {
                 continue;
             }
             const result = i.fun(...(params[index]?.length ? params[index] : i.params));
@@ -211,13 +239,13 @@ class Schedule {
         return array;
     }
     async runScheduleExceptNamesPromise(name, time, ...params) {
-        if (!name.length) {
+        if (Array.isArray(name) && !name.length) {
             throw new TypeError("The array length of the name argument must be at least 1.");
         }
         let index = 0;
         const array = [];
         for (const i of this.scheduleArray) {
-            if (typeof i.name === "undefined" || (typeof i.name === "string" && name.includes(i.name))) {
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && Array.isArray(name) && name.includes(i.name)) || (name instanceof RegExp && i.name.search(name) > -1)) {
                 continue;
             }
             const result = await new Promise((resolve) => {
@@ -232,13 +260,13 @@ class Schedule {
         return array;
     }
     runScheduleExceptNames(name, ...params) {
-        if (!name.length) {
+        if (Array.isArray(name) && !name.length) {
             throw new TypeError("The array length of the name argument must be at least 1.");
         }
         let index = 0;
         const array = [];
         for (const i of this.scheduleArray) {
-            if (typeof i.name === "undefined" || (typeof i.name === "string" && name.includes(i.name))) {
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && Array.isArray(name) && name.includes(i.name)) || (name instanceof RegExp && i.name.search(name) > -1)) {
                 continue;
             }
             const reuslt = i.fun(...(params[index]?.length ? params[index] : i.params));
@@ -256,4 +284,4 @@ class Schedule {
         });
     }
 }
-export { Schedule };
+export default Schedule;

@@ -46,9 +46,9 @@ class DateTimeFormat {
         .replace(/Y{4}/g, year)
         .replace(/Y{2}/g, year.substring(2))
         .replace(/M{2}/g, month)
-        .replace(/M{1}/g, month.substring(1))
+        .replace(/M{1}/g, Number(month) < 10 ? month.substring(1) : month)
         .replace(/D{2}/g, day)
-        .replace(/D{1}/g, day.substring(1));
+        .replace(/D{1}/g, Number(day) < 10 ? day.substring(1) : day);
     }
 
     static simpleTimeFormat(format:string, date:Date|number = Date.now(), timeZone?:string|undefined):string {
@@ -134,8 +134,9 @@ class ListFormat extends Intl.ListFormat {
     }
 }
 
-
-export class BetterIntl {
+class BetterIntl {
     public static readonly DateTimeFormat = DateTimeFormat;
     public static readonly ListFormat = ListFormat;
 }
+
+export default BetterIntl;
