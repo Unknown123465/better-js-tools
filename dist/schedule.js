@@ -27,7 +27,7 @@ class Schedule {
         else if (typeof name === "string" && this.scheduleArray.some((f) => f.name === name)) {
             throw new TypeError("This schedule name already exists: " + name);
         }
-        else if (typeof time === "number" && (!isFinite(time) || time > 0)) {
+        else if (typeof time === "number" && (!isFinite(time) || time < 0)) {
             throw new RangeError("The time argument must be a finite and positive.");
         }
         this.scheduleArray.splice(index, 0, { name: name || undefined, fun, time: time ?? 0, params });

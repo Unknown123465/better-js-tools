@@ -39,7 +39,7 @@ class Schedule {
             throw new RangeError("The index argument must be at least 0, a finite, and an integer.");
         } else if (typeof name === "string" && this.scheduleArray.some((f) => f.name === name)) {
             throw new TypeError("This schedule name already exists: " + name);
-        } else if (typeof time === "number" && (!isFinite(time) || time > 0)) {
+        } else if (typeof time === "number" && (!isFinite(time) || time < 0)) {
             throw new RangeError("The time argument must be a finite and positive.");
         }
 
