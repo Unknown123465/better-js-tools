@@ -274,7 +274,7 @@ class Schedule {
         const array:any[] = [];
         for (const i of this.scheduleArray) {
 
-            if (typeof i.name === "undefined" || (typeof i.name === "string" && !name.includes(i.name))) {
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && name.includes(i.name))) {
                 continue;
             }
 
@@ -304,7 +304,7 @@ class Schedule {
         const array:any[] = [];
         for (const i of this.scheduleArray) {
 
-            if (typeof i.name === "undefined" || (typeof i.name === "string" && !name.includes(i.name))) {
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && name.includes(i.name))) {
                 continue;
             }
 

@@ -9,6 +9,9 @@ class NumberTools {
         else if (!isFinite(min) || !isFinite(max)) {
             throw new RangeError("The minimum(min) and maximum(max) argument must be finite.");
         }
+        else if (min > max) {
+            throw new RangeError("The minimum(min) argument must not be larger than the maximum(max) argument.");
+        }
         else if (attempt === 1) {
             return random();
         }
@@ -24,6 +27,9 @@ class NumberTools {
         }
         else if (typeof second === "number" && first > second) {
             throw new RangeError("The first argument must not be greater than the second argument.");
+        }
+        else if (unit <= 0) {
+            throw new RangeError("The unit argument must be at least 1.");
         }
         const array = [];
         for (let i = typeof second === "number" && second >= 1 ? first : 0; i < (typeof second === "number" ? second : first); i += unit) {
