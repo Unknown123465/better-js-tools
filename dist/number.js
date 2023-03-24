@@ -18,15 +18,15 @@ class NumberTools {
         });
         return array;
     }
-    static getNumberArray(first, second) {
+    static getNumberArray(first, second, unit = 1) {
         if (!Number.isInteger(first) || (typeof second === "number" && !Number.isInteger(second))) {
-            throw new RangeError("The first and second arguments must be integer (but the second argument can be undefined).");
+            throw new RangeError("The arguments must be integer (but the second and unit argument can be undefined).");
         }
         else if (typeof second === "number" && first > second) {
             throw new RangeError("The first argument must not be greater than the second argument.");
         }
         const array = [];
-        for (let i = typeof second === "number" && second >= 1 ? first : 0; i < (typeof second === "number" ? second : first); i++) {
+        for (let i = typeof second === "number" && second >= 1 ? first : 0; i < (typeof second === "number" ? second : first); i += unit) {
             array.push(i);
         }
         return array;

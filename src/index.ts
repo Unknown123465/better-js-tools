@@ -1,7 +1,7 @@
 import { BetterIntl } from "./betterIntl.js";
 import { NumberTools } from "./number.js";
 import {Schedule} from "./schedule.js";
-
+/*
 (async() => {
     const test = new Schedule();
 
@@ -32,7 +32,7 @@ import {Schedule} from "./schedule.js";
     const dateFormat = new BetterIntl.DateTimeFormat("fr-CA", "ko");
     //console.log(BetterIntl.DateTimeFormat.simpleDateFormat("YYYY.MM.DD"))
     console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : false}, new Date(), "*"))
-})/*()*/;
+})
 
 (async() => {
 
@@ -41,9 +41,12 @@ import {Schedule} from "./schedule.js";
     //console.log(new BetterIntl.ListFormat("ko", {}).format([1,2,3, null, undefined, ""]))
     
 })()
+*/
 
-export class JSTools {
+export {Schedule, BetterIntl, NumberTools};
+
+/*export class JSTools {
     public static readonly Schedule = Schedule;
     public static readonly BetterIntl = BetterIntl;
     public static readonly NumberTools = NumberTools;
-};
+};*/
