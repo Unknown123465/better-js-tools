@@ -67,7 +67,7 @@ class Schedule {
         return this.scheduleArray;
     }
     setSchedule(target, fun) {
-        let changeTarget = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name);
+        let changeTarget = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name === target);
         if (typeof changeTarget === "undefined") {
             throw new TypeError("The schedule does not exist.");
         }
@@ -99,7 +99,7 @@ class Schedule {
         this.scheduleArray = [];
     }
     async runScheduleOnePromise(target, time = 0, ...params) {
-        const schedule = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name);
+        const schedule = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name === target);
         if (!schedule) {
             throw new TypeError("The schedule does not exist.");
         }
@@ -111,7 +111,7 @@ class Schedule {
         });
     }
     runScheduleOne(target, ...params) {
-        const schedule = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name);
+        const schedule = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name === target);
         if (!schedule) {
             throw new TypeError("The schedule does not exist.");
         }
@@ -269,8 +269,8 @@ class Schedule {
             if (typeof i.name === "undefined" || (typeof i.name === "string" && Array.isArray(name) && name.includes(i.name)) || (name instanceof RegExp && i.name.search(name) > -1)) {
                 continue;
             }
-            const reuslt = i.fun(...(params[index]?.length ? params[index] : i.params));
-            array.push(reuslt);
+            const result = i.fun(...(params[index]?.length ? params[index] : i.params));
+            array.push(result);
             index++;
         }
         return array;

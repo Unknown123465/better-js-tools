@@ -82,7 +82,7 @@ class Schedule {
 
     setSchedule(target:number|string, fun:ScheduleArray|string|number|Array<any>):boolean {
 
-        let changeTarget:ScheduleArray|undefined = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name);
+        let changeTarget:ScheduleArray|undefined = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name === target);
 
         if (typeof changeTarget === "undefined") {
             throw new TypeError("The schedule does not exist.");
@@ -116,7 +116,7 @@ class Schedule {
 
     async runScheduleOnePromise(target:number|string, time:number|undefined = 0, ...params:Array<any>):Promise<any> {
         
-        const schedule:ScheduleArray|undefined = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name);
+        const schedule:ScheduleArray|undefined = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name === target);
         if (!schedule) {
             throw new TypeError("The schedule does not exist.");
         }
@@ -132,7 +132,7 @@ class Schedule {
 
     runScheduleOne(target:number|string, ...params:Array<any>):any {
 
-        const schedule:ScheduleArray|undefined = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name);
+        const schedule:ScheduleArray|undefined = typeof target === "number" ? this.scheduleArray[target] : this.scheduleArray.find((f) => f.name === target);
         if (!schedule) {
             throw new TypeError("The schedule does not exist.");
         }
