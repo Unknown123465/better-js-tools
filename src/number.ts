@@ -2,7 +2,7 @@
 
 class NumberTools {
 
-    static getRandomNumber(min:number, max:number, attempt:number = 1, numType:"int"|"float" = "int",):number|number[] {
+    static getRandomNumber(min:number, max:number, attempt:number = 1, numType:"int"|"float" = "int"):number|number[] {
 
         const random = ():number => {
             return numType === "int" ? Math.floor(Math.random() * (max - min)) + min : Math.random() * (max - min) + min;
@@ -12,6 +12,8 @@ class NumberTools {
             throw new RangeError("The attempt argument must be an integer 1 or greater.");
         } else if (!isFinite(min) || !isFinite(max)) {
             throw new RangeError("The minimum(min) and maximum(max) argument must be finite.");
+        } else if (min > max) {
+            throw new RangeError("The minimum(min) argument must not be larger than the maximum(max) argument.")
         } else if (attempt === 1) {
             return random();
         }
@@ -30,6 +32,8 @@ class NumberTools {
             throw new RangeError("The arguments must be integer (but the second and unit argument can be undefined).");
         } else if (typeof second === "number" && first > second) {
             throw new RangeError("The first argument must not be greater than the second argument.");
+        } else if (unit <= 0) {
+            throw new RangeError("The unit argument must be at least 1.");
         }
 
         const array:number[] = [];

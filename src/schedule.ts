@@ -264,6 +264,59 @@ class Schedule {
         return array;
     }
 
+    async runScheduleExceptNamesPromise(name:string[], time:number[], ...params:Array<any[]>):Promise<any[]> {
+
+        if (!name.length) {
+            throw new TypeError("The array length of the name argument must be at least 1.");
+        }
+
+        let index = 0;
+        const array:any[] = [];
+        for (const i of this.scheduleArray) {
+
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && !name.includes(i.name))) {
+                continue;
+            }
+
+            const result = await new Promise((resolve) => {
+
+                setTimeout(async () => {
+
+                    const result = await i.fun(...(params[index]?.length ? params[index] : i.params));
+                    resolve(result);
+                }, time[index] ?? i.time ?? 0);
+            });
+
+            array.push(result);
+            index++;
+        }
+
+        return array;
+    }
+
+    runScheduleExceptNames(name:string[], ...params:Array<any>):any[] {
+
+        if (!name.length) {
+            throw new TypeError("The array length of the name argument must be at least 1.");
+        }
+
+        let index = 0;
+        const array:any[] = [];
+        for (const i of this.scheduleArray) {
+
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && !name.includes(i.name))) {
+                continue;
+            }
+
+            const reuslt = i.fun(...(params[index]?.length ? params[index] : i.params));
+
+            array.push(reuslt);
+            index++;
+        }
+
+        return array;
+    }
+
     static async sleep(time:number) {
 
         if (time < 0 || !isFinite(time)) {
