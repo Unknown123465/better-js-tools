@@ -1,7 +1,7 @@
 import { BetterIntl } from "./betterIntl.js";
 import { NumberTools } from "./number.js";
 import {Schedule} from "./schedule.js";
-/*
+
 (async() => {
     const test = new Schedule();
 
@@ -18,22 +18,23 @@ import {Schedule} from "./schedule.js";
 
     for (let i = 1; i <= 5; i++) {
 
-        test.addSchedule(`index=${i}`, console.log, undefined, [i, i * 2]);
+        test.addSchedule(`index=${i}`, console.log, undefined, ...["defult", i, i * 2]);
     }
 
     console.log("----------------------");
+    test.runScheduleRange(2, 4, ["a", "B", "c"], ["e", "f"])
     
     //await test.runScheduleAll([["test"]], [1000, 1000, 1000, 1000, 1000]);
     
     //await test.runScheduleRangePromise(0, 2, [["test"], [1], [2], [3]], [500, 500]);
 
-    console.log(test.getScheduleRange("first", "index=3", "adsad"));
+    /*console.log(test.getScheduleRange("first", "index=3", "adsad"));
 
     const dateFormat = new BetterIntl.DateTimeFormat("fr-CA", "ko");
     //console.log(BetterIntl.DateTimeFormat.simpleDateFormat("YYYY.MM.DD"))
-    console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : false}, new Date(), "*"))
-})
-
+    console.log(dateFormat.mixDateTimeFormat({year : "numeric", month : "2-digit", day : "2-digit", hour12 : false}, new Date(), "*"))*/
+})()
+/*
 (async() => {
 
     console.log(NumberTools.getNumberArray(0, 10));

@@ -14,10 +14,12 @@ class Schedule {
     addSchedule(name:string|undefined, fun:Function, time:number|undefined, ...params:Array<any>) {
 
         if (this.scheduleArray.some((f) => typeof name === "string" && f.name === name)) {
-            throw new TypeError("That schedule name already exists: " + name);
+            throw new TypeError("This schedule name already exists: " + name);
+        } else if (typeof time === "number" && (!isFinite(time) || time < 0)) {
+            throw new RangeError("The time argument must be a finite and positive.");
         }
-
-        this.scheduleArray.push({name : name ?? undefined, fun, time, params : [...params]});
+        
+        this.scheduleArray.push({name : name || undefined, fun, time, params : params});
     }
 
     getSchedule(target:number|string):ScheduleArray|undefined {
@@ -150,6 +152,7 @@ class Schedule {
         }
 
         let index = 0;
+        let paramIndex = 0;
         const array = [];
         for (const i of this.scheduleArray) {
 
@@ -163,13 +166,14 @@ class Schedule {
             const result = await new Promise((resolve) => {
 
                 setTimeout(async () => {
-                    const result = await i.fun(...(params[index]?.length ? params[index] : i.params));
+                    const result = await i.fun(...(params[paramIndex]?.length ? params[paramIndex] : i.params));
                     resolve(result);
-                }, time[index] ?? i.time ?? 0);
+                }, time[paramIndex] ?? i.time ?? 0);
             });
 
             array.push(result);
             index++;
+            paramIndex++;
         }
 
         return array;
@@ -186,6 +190,7 @@ class Schedule {
         }
 
         let index = 0;
+        let paramIndex = 0;
         const array = [];
         for (const i of this.scheduleArray) {
 
@@ -194,6 +199,60 @@ class Schedule {
                 continue;
             } else if (end <= index) {
                 break;
+            }
+            
+            const result = i.fun(...(params[paramIndex]?.length ? params[paramIndex] : i.params));
+
+            array.push(result);
+            index++;
+            paramIndex++;
+        }
+
+        return array;
+    }
+
+    async runScheduleAsNamesPromise(name:string[], time:number[], ...params:Array<any[]>):Promise<any[]> {
+
+        if (!name.length) {
+            throw new TypeError("The array length of the name argument must be at least 1.");
+        }
+
+        let index = 0;
+        const array:any[] = [];
+        for (const i of this.scheduleArray) {
+
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && !name.includes(i.name))) {
+                continue;
+            }
+
+            const result = await new Promise((resolve) => {
+
+                setTimeout(async () => {
+
+                    const result = await i.fun(...(params[index]?.length ? params[index] : i.params));
+                    resolve(result);
+                }, time[index] ?? i.time ?? 0);
+            });
+
+            array.push(result);
+            index++;
+        }
+
+        return array;
+    }
+
+    runScheduleAsNames(name:string[], ...params:Array<any[]>):any[] {
+
+        if (!name.length) {
+            throw new TypeError("The array length of the name argument must be at least 1.");
+        }
+
+        let index = 0;
+        const array:any[] = [];
+        for (const i of this.scheduleArray) {
+
+            if (typeof i.name === "undefined" || (typeof i.name === "string" && !name.includes(i.name))) {
+                continue;
             }
 
             const result = i.fun(...(params[index]?.length ? params[index] : i.params));
